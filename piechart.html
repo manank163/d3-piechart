@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Pie chart using d3</title>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	
+		<style type="text/css">
+			.slice text{
+				font-size : 12pt;
+				font-family : Arial;
+			.
+			}
+		</style>
+	</head>
+	<body>
+		<script text="type/javascript">
+			
+			var w=500;
+		 	var h=500;
+			var r=100;
+			
+			//var data = [{"label":"India", "value":10}, {"label":"USA", "value":20}, {"label":"UK", "value":50},{"label":"Austrailia", "value":20},{"label":"Germany", "value":35}];
+			
+			
+			d3.json("data.json",function(error,dataset){
+			data=dataset;
+
+			var color = d3.scale.category10();
+
+			var inradius=0;
+			
+			var vis = d3.select("body").append("svg")
+						.data([data])
+						.attr("width", w)
+						.attr("height",h)
+						.append("g") // adds <g> tag || make a group to hold our pie chart
+						.attr("transform","translate(" + r + ","+ r + ")")
+
+			var arc = d3.svg.arc()
+				   .outerRadius(r);
+			
+			var pie = d3.layout.pie()
+					.value(function (d) {return d.value;});
+			
+			var arcs = vis.selectAll("slice")
+					.data(pie)
+					.enter()
+					.append("g")
+					.attr("class","slice");
+
+				arcs.append("path")
+					.attr("fill",function(d,i) { return color(i); })
+					.attr("d",arc);
+				
+		
+			var legend = arcs.append("g")
+					.attr("class","legend")
+					.attr("x",w-100)
+					.attr("y",10);
+				
+				legend.append("rect")
+					.style("fill",function(d,i) { return color(i);})
+					.attr("width",10)
+					.attr("height",10)
+					.attr("x",160)
+					.attr("y",function (d,i) { return (i * 30) - 50 ;});
+
+				legend.append("text")	
+					.style("fill","black")
+					.attr("text-anchor", "left") 
+					.attr("x",175)
+					.attr("y",function (d,i) { return (i * 30) - 40 ;})                      
+            				.text(function(d, i) { return data[i].label ; })
+					.on('mouseover',function(d)
+						{
+						 d3.select(this).attr('fill','yellow');
+						showValue(d); })
+					.on('mouseout',function(d){d3.select(this)
+								.attr("fill","black");});
+			
+				
+				
+				var showValue = function(d) {
+   					 	vis.append("text")
+         						.attr({'transform' : function(d) { return 'translate(' + arc.centroid(d) + ')';},'text-anchor' : 'middle'})
+							.text(function(d){ return d.value ;});
+							}
+
+			var hideValue = function() { vis.select('text.value').remove(); }
+			
+		});			 
+			/* arcs.append("svg:rect")
+				.attr("fill",function(d,i) { return color(i);})
+				.attr("width",10)
+				.attr("height",10)
+				.attr("x",160)
+				.attr("y",function (d,i) { return (i * 30) - 50 ;});
+			
+			 arcs.append("svg:text")	
+				.attr("fill","black")
+				.attr("text-anchor", "left") 
+				.attr("x",200)
+				.attr("y",function (d,i) { return (i * 30) - 50 ;})                      
+            			.text(function(d, i) { return data[i].label ; })
+				.on('mouseover',function(d){d3.select(this).attr('fill','yellow');
+					showValue(d); 
+					})
+				.on('mouseout',function(d){d3.select(this)
+								.attr("fill","black");});
+
+			
+			*/
+			
+				
+	
+		</script>
+	</body>
+</html>
+
